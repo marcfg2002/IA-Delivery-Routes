@@ -64,4 +64,4 @@ docs/              documentación (requisitos, casos de uso, arquitectura, manua
 
 ## Autores
 
-Marc Fernández González · _(añadir compañeros del grupo)_
+Marc Fernández González
