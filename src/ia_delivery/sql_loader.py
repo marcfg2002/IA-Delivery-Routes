@@ -4,7 +4,8 @@ Carga del script SQL Server (BDIADelivery) a tablas de pandas / CSV.
 El script entregado en clase es un volcado de SQL Server (T-SQL) con sentencias
 `INSERT [dbo].[Tabla] (...) VALUES (...)`. Para no depender de tener un SQL
 Server instalado, este módulo parsea directamente esos INSERT y genera un CSV
-por tabla en `data/processed/`.
+por tabla en `data/processed/`. El script original (data/raw/) solo se lee: nunca
+se modifica.
 
 Uso:
     python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
@@ -12,6 +13,7 @@ Uso:
 from __future__ import annotations
 
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -71,12 +73,29 @@ def _parse_value(token: str):
         token = token[1:]
     if token.startswith("'") and token.endswith("'"):
         return token[1:-1].replace("''", "'")
-    if token.startswith("0x"):  # binarios (p.ej. columna geography) -> se descartan
-        return None
+    if token.startswith("0x"):  # binarios (columna geography): se guardan en hex y se descodifican luego
+        return token
     try:
         return int(token)
     except ValueError:
         return float(token)
+
+
+def decode_geography_point(hex_value: str | None) -> tuple[float, float] | tuple[None, None]:
+    """
+    Descodifica un punto del tipo geography de SQL Server (formato binario nativo).
+
+    Estructura de un punto simple: SRID (4 bytes, 4326 = WGS84) + versión (1 byte)
+    + propiedades (1 byte) + latitud (double) + longitud (double), little-endian.
+    """
+    if not hex_value:
+        return (None, None)
+    raw = bytes.fromhex(hex_value[2:] if hex_value.startswith("0x") else hex_value)
+    srid = struct.unpack("<i", raw[0:4])[0]
+    if srid != 4326 or len(raw) < 22:
+        raise ValueError(f"Formato geography no esperado (SRID={srid}, {len(raw)} bytes)")
+    lat, lon = struct.unpack("<dd", raw[6:22])
+    return (lat, lon)
 
 
 def parse_sql_dump(path: str | Path) -> dict[str, pd.DataFrame]:
@@ -92,9 +111,14 @@ def parse_sql_dump(path: str | Path) -> dict[str, pd.DataFrame]:
             rows.setdefault(m.group("table"), []).append(dict(zip(cols, vals)))
 
     tables = {t: pd.DataFrame(r) for t, r in rows.items()}
-    # La columna geography es redundante con Latitud/Longitud
-    if "Destinos" in tables:
-        tables["Destinos"] = tables["Destinos"].drop(columns=["Coordenadas"], errors="ignore")
+    # La columna Coordenadas (geography) NO coincide con Latitud/Longitud en ningún destino
+    # (ver docs). No la descartamos: la guardamos descodificada en GeoLatitud/GeoLongitud
+    # por si el profesor indica que es la buena. El cálculo de rutas usa Latitud/Longitud.
+    if "Destinos" in tables and "Coordenadas" in tables["Destinos"]:
+        geo = tables["Destinos"]["Coordenadas"].map(decode_geography_point)
+        tables["Destinos"]["GeoLatitud"] = geo.str[0]
+        tables["Destinos"]["GeoLongitud"] = geo.str[1]
+        tables["Destinos"] = tables["Destinos"].drop(columns=["Coordenadas"])
     if "Pedidos" in tables:
         tables["Pedidos"]["FechaPedido"] = pd.to_datetime(tables["Pedidos"]["FechaPedido"])
     return tables
