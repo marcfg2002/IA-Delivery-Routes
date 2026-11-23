@@ -1,0 +1,4 @@
+# El script SQL es el volcado de la BBDD de clase, no código del proyecto
+data/** linguist-vendored
+*.sql linguist-detectable=false
+*.ipynb linguist-detectable=true
