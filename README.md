@@ -23,7 +23,7 @@ de camiones propios** necesaria para servir los pedidos antes de que caduquen.
 ## Datos
 
 Base de datos `BDIADelivery` final (MySQL) entregada en clase: `data/raw/BDIADelivery_MySQL.sql`.
-La versión inicial (SQL Server), que tenía las coordenadas mal, se conserva en `data/raw/obsoleta/`.
+La versión inicial (SQL Server), que tenía las coordenadas mal, ya no está en el repositorio (queda en el historial de Git). Su análisis se conserva en `notebooks/obsoleta/`.
 
 | Tabla | Filas | Contenido |
 |---|---:|---|

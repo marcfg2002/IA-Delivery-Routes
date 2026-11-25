@@ -6,7 +6,7 @@ Soporta los dos formatos que nos han dado los profesores:
 - **MySQL** (BBDD final, `data/raw/BDIADelivery_MySQL.sql`): sentencias
   `INSERT INTO Tabla (...) VALUES` con una fila por línea y la columna
   `Coordenadas` como `ST_GeomFromText('POINT(lon lat)', 4326, ...)`.
-- **SQL Server** (BBDD inicial, ya obsoleta, `data/raw/obsoleta/`): sentencias
+- **SQL Server** (BBDD inicial, ya retirada del repositorio): sentencias
   `INSERT [dbo].[Tabla] (...) VALUES (...)` con la columna geography en binario.
 
 El formato se detecta solo. Para no depender de tener MySQL o SQL Server
