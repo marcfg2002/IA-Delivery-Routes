@@ -22,7 +22,8 @@ de camiones propios** necesaria para servir los pedidos antes de que caduquen.
 
 ## Datos
 
-Base de datos `BDIADelivery` (SQL Server) entregada en clase: `data/raw/BDIADelivery_script.sql`.
+Base de datos `BDIADelivery` final (MySQL) entregada en clase: `data/raw/BDIADelivery_MySQL.sql`.
+La versión inicial (SQL Server), que tenía las coordenadas mal, se conserva en `data/raw/obsoleta/`.
 
 | Tabla | Filas | Contenido |
 |---|---:|---|
@@ -54,7 +55,7 @@ pip install -r requirements.txt
 $env:PYTHONPATH = "src"
 
 # 4. Convertir el script SQL a CSV
-python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
+python -m ia_delivery.sql_loader data/raw/BDIADelivery_MySQL.sql data/processed
 
 # 5. Ejecutar los tests
 python -m pytest tests
@@ -70,7 +71,7 @@ python -m venv venv
 venv\Scripts\activate.bat
 pip install -r requirements.txt
 set PYTHONPATH=src
-python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
+python -m ia_delivery.sql_loader data/raw/BDIADelivery_MySQL.sql data/processed
 python -m pytest tests
 ```
 
@@ -80,11 +81,14 @@ python -m pytest tests
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-PYTHONPATH=src python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
+PYTHONPATH=src python -m ia_delivery.sql_loader data/raw/BDIADelivery_MySQL.sql data/processed
 PYTHONPATH=src python -m pytest tests
 ```
 
-### ⚠️ Aviso sobre los destinos    
+### ⚠️ Aviso sobre los destinos (BBDD inicial, ya sustituida)
+
+La BBDD final (MySQL) ya tiene coordenadas reales. Este aviso explica el problema que detectamos en la inicial:
+
 
 Las coordenadas de la tabla `Destinos` son **aleatorias** dentro de un rectángulo de la península:
 
