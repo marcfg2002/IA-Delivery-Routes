@@ -101,6 +101,14 @@ Las coordenadas de la tabla `Destinos` son **aleatorias** dentro de un rectángu
 De momento las rutas se calculan con `Latitud`/`Longitud` (distancia Haversine). Lo estamos consultando
 con el profesor. Más detalle en `notebooks/01_analisis_exploratorio.ipynb`.
 
+## Simulador
+
+Esqueleto del simulador en Streamlit (pedidos sobre el mapa y parámetros de la flota; el cálculo de rutas se conectará cuando esté el optimizador):
+
+```bash
+streamlit run app/app.py
+```
+
 ## Estructura
 
 ```
