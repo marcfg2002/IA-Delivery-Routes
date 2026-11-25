@@ -36,13 +36,55 @@ Base de datos `BDIADelivery` (SQL Server) entregada en clase: `data/raw/BDIADeli
 Para trabajar sin SQL Server, el script se convierte a CSV. **El script original nunca se modifica**:
 solo se lee, y un test comprueba que sigue siendo idéntico al que nos dieron (MD5).
 
+### Instalación y ejecución
+
+Requisitos: Python 3.10 o superior. Los comandos se ejecutan desde la raíz del proyecto.
+
+**Windows (PowerShell)**
+
+```powershell
+# 1. Crear y activar el entorno virtual
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# 2. Instalar dependencias
+pip install -r requirements.txt
+
+# 3. Indicar dónde está el código fuente (solo una vez por terminal)
+$env:PYTHONPATH = "src"
+
+# 4. Convertir el script SQL a CSV
+python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
+
+# 5. Ejecutar los tests
+python -m pytest tests
+```
+
+> Si PowerShell bloquea la activación del entorno virtual, ejecuta una vez
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` y vuelve a intentarlo.
+
+**Windows (CMD)**
+
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
+pip install -r requirements.txt
+set PYTHONPATH=src
+python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
+python -m pytest tests
+```
+
+**Linux / macOS (bash)**
+
 ```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 PYTHONPATH=src python -m ia_delivery.sql_loader data/raw/BDIADelivery_script.sql data/processed
 PYTHONPATH=src python -m pytest tests
 ```
 
-### ⚠️ Aviso sobre los destinos
+### ⚠️ Aviso sobre los destinos    
 
 Las coordenadas de la tabla `Destinos` son **aleatorias** dentro de un rectángulo de la península:
 
